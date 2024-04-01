@@ -1,6 +1,8 @@
 mod abi;
 #[path = "kv_out.rs"]
 mod kv;
+#[path = "db_out.rs"]
+mod db;
 mod pb;
 
 use hex_literal::hex;
@@ -14,8 +16,10 @@ use substreams::{
     store::{StoreGet, StoreGetProto, StoreNew, StoreSet, StoreSetProto},
     Hex,
 };
+use substreams::proto;
 use substreams_ethereum::{pb::eth::v2 as eth, Event};
 use substreams_sink_kv::pb::sf::substreams::sink::kv::v1::KvOperations;
+use substreams_database_change::pb::database::DatabaseChanges;
 
 const FACTORY_CONTRACT: [u8; 20] = hex!("4823be69546f9e1Ab8a87f315108c19dDC8E48b4");
 // const FACTORY_CONTRACT: [u8; 20] = hex!("2081d59917ee6B58D92A19174c158354359187BC");
@@ -42,6 +46,7 @@ fn map_pools(blk: eth::Block) -> Result<Pools, substreams::errors::Error> {
 #[substreams::handlers::store]
 pub fn store_pools_created(pools: Pools, store: StoreSetProto<Pool>) {
     let mut ordinal = 0;
+    log::info!("Storing Pools from Primary pools");
     for pool in pools.pools {
         ordinal = ordinal + 1;
         let pool_address = &pool.pool_address;
@@ -121,3 +126,32 @@ pub fn kv_out(deltas: store::Deltas<DeltaProto<Subscription>>) -> Result<KvOpera
 
     Ok(kv_ops)
 }
+
+#[substreams::handlers::map]
+pub fn db_out(deltas: store::Deltas<DeltaProto<Pool>>) -> Result<DatabaseChanges, Error> {
+    use substreams::pb::substreams::store_delta::Operation;
+    let mut database_changes: DatabaseChanges = Default::default();
+    for delta in deltas.deltas {
+        match delta.operation {
+            Operation::Create => {
+                db::push_create(&mut database_changes, &delta.key, delta.ordinal, delta.new_value);
+            },
+            Operation::Update => {
+                db::push_update(&mut database_changes, &delta.key, delta.ordinal, delta.old_value, delta.new_value);
+            },
+            // Operation::Delete => {
+            //     db::push_delete(&mut database_changes, &delta.key, delta.ordinal, delta.old_value);
+            // },
+            x => panic!("unsupported opeation {:?}", x),
+        }
+    }
+
+    Ok(database_changes)
+}
+
+// #[substreams::handlers::map]
+// fn db_out(block_meta_start: store::Deltas<DeltaProto<BlockMeta>>) -> Result<DatabaseChanges, substreams::errors::Error> {
+//     let mut database_changes: DatabaseChanges = Default::default();
+//     transform_block_meta_to_database_changes(&mut database_changes, block_meta_start);
+//     Ok(database_changes)
+// }

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package verified.primary.v1;
+
+message Pools {
+    repeated Pool pools = 1;
+}
+
+message Pool {
+    bytes pool_address = 1;
+}
+
+message Subscriptions {
+    repeated Subscription subscriptions = 1;
+}
+
+message Subscription {
+    bytes assetIn_address = 1;
+    bytes assetOut_address = 2;
+    uint64 subscription_amount = 3;
+    bytes investor_address = 4;
+    uint64 price = 5;
+    uint64 execution_date = 6;
+}

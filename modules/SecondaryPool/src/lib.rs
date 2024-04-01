@@ -3,6 +3,7 @@ mod pb;
 
 use hex_literal::hex;
 use pb::verified::secondary::v1::{Pool, Pools, Trade};
+use substreams::store::{self, DeltaProto};
 use substreams::{
     errors::Error,
     log,
@@ -75,29 +76,49 @@ fn map_trades(blk: eth::Block, pools_store: StoreGetProto<Pool>) -> Result<Trade
     Ok(pool_events)
 }
 
-// #[substreams::handlers::map]
-pub fn kv_out(trade_reported: Trade) -> Result<KvOperations, Error> {
+#[substreams::handlers::store]
+pub fn store_trade_created(trades: Trade, store: StoreSetProto<Trade>) {
+    let ordinal = 1;
+    store.set(ordinal, &Hex::encode("s"), &trades);
+}
+
+
+#[substreams::handlers::map]
+fn map_subscriptions_check(
+    blk: eth::Block,
+    pools_store: StoreGetProto<Trade>,
+) -> Result<Trade, Error> {
+    log::info!("Detecting subscriptions from Secondary module");
+    let mut pool_events = Trade::default();
+
+    Ok(pool_events)
+}
+
+
+
+#[substreams::handlers::map]
+pub fn kv_out(deltas: store::Deltas<DeltaProto<Trade>>) -> Result<KvOperations, Error> {
     // Create an empty 'KvOperations' structure
     let mut kv_ops: KvOperations = Default::default();
-
+    // kv::process_deltas(&mut kv_ops, deltas);
     // Here, we could add more operations to the kv_ops
-    kv_ops.push_new("security", trade_reported.security_address, 1);
-    kv_ops.push_new("order_ref", trade_reported.order_ref, 2);
-    kv_ops.push_new("party", trade_reported.party, 3);
-    kv_ops.push_new("counterparty", trade_reported.counterparty, 4);
-    kv_ops.push_new("order_type", trade_reported.order_type, 5);
-    kv_ops.push_new("price", trade_reported.price.to_be_bytes(), 6);
-    kv_ops.push_new("currency_address", trade_reported.currency_address, 7);
-    kv_ops.push_new(
-        "traded_amount",
-        trade_reported.traded_amount.to_be_bytes(),
-        8,
-    );
-    kv_ops.push_new(
-        "execution_date",
-        trade_reported.execution_date.to_be_bytes(),
-        9,
-    );
+    // kv_ops.push_new("security", trade_reported.security_address, 1);
+    // kv_ops.push_new("order_ref", trade_reported.order_ref, 2);
+    // kv_ops.push_new("party", trade_reported.party, 3);
+    // kv_ops.push_new("counterparty", trade_reported.counterparty, 4);
+    // kv_ops.push_new("order_type", trade_reported.order_type, 5);
+    // kv_ops.push_new("price", trade_reported.price.to_be_bytes(), 6);
+    // kv_ops.push_new("currency_address", trade_reported.currency_address, 7);
+    // kv_ops.push_new(
+    //     "traded_amount",
+    //     trade_reported.traded_amount.to_be_bytes(),
+    //     8,
+    // );
+    // kv_ops.push_new(
+    //     "execution_date",
+    //     trade_reported.execution_date.to_be_bytes(),
+    //     9,
+    // );
 
     Ok(kv_ops)
 }

@@ -10,7 +10,7 @@ import {
 // Import service definition that you want to connect to.
 import { Kv } from "../gen/read_connectweb";
 import { Subscription } from "../gen/primary_pb";
-import { Trade } from "../gen/secondary_pb";
+
 
 // The transport defines what type of endpoint we're hitting.
 // In our example we'll be communicating with a Connect endpoint.
