@@ -63,3 +63,13 @@ modules:
         mode: deltas
     output:
       type: proto:sf.substreams.sink.kv.v1.KVOperations
+  - name: jsonl_out
+    kind: map
+    initialBlock: 0
+    inputs:
+      - source: sf.ethereum.type.v2.Block        # Block data
+      - store: store_pools_created               # Pool store (for pools)
+      - store: store_subscription_created       # Subscription store (for subscriptions)
+    output:
+      type: proto:substreams.sink.files.v1.Lines
+    
