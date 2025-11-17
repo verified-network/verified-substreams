@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package contract.v1;
+message Events {
+    repeated SecondarypoolFactory_PoolCreated secondarypool_factory_pool_createds = 1;
+    repeated SecondaryPool_TradeReport secondary_pool_trade_reports = 2;
+}
+
+message SecondarypoolFactory_PoolCreated {
+    string evt_tx_hash = 1;
+    uint32 evt_index = 2;
+    google.protobuf.Timestamp evt_block_time = 3;
+    uint64 evt_block_number = 4;
+    bytes pool = 5;
+}
+    
+message SecondaryPool_TradeReport {
+    string evt_tx_hash = 1;
+    uint32 evt_index = 2;
+    google.protobuf.Timestamp evt_block_time = 3;
+    uint64 evt_block_number = 4;
+    string evt_address = 5;
+    bytes security = 6;
+    bytes order_ref = 7;
+    bytes party = 8;
+    bytes counterparty = 9;
+    bytes order_type = 10;
+    string price = 11;
+    bytes currency = 12;
+    string amount = 13;
+    string execution_date = 14;
+}
+    
+message SecondaryPoolTradeReports {
+  string pool_address = 1;
+  repeated SecondaryPool_TradeReport items = 2;
+}
+
+message SecondaryPoolTradeReportsList {
+  repeated SecondaryPoolTradeReports items = 1;
+}

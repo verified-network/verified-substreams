@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package contract.v1;
+
+message Events {
+  repeated PrimarypoolFactory_PoolCreated primarypool_factory_pool_createds = 1;
+  repeated PrimaryPool_Subscription primary_pool_subscriptions = 2;
+}
+
+message PrimarypoolFactory_PoolCreated {
+  string evt_tx_hash = 1;
+  uint32 evt_index = 2;
+  google.protobuf.Timestamp evt_block_time = 3;
+  uint64 evt_block_number = 4;
+  bytes pool = 5;
+}
+
+message PrimaryPool_Subscription {
+  string evt_tx_hash = 1;
+  uint32 evt_index = 2;
+  google.protobuf.Timestamp evt_block_time = 3;
+  uint64 evt_block_number = 4;
+  string evt_address = 5;
+  bytes asset_in = 6;
+  bytes asset_out = 7;
+  string subscription = 8;
+  bytes investor = 9;
+  string price = 10;
+  string execution_date = 11;
+}
+
+message PrimaryPoolSubscriptions {
+  string pool_address = 1;
+  repeated PrimaryPool_Subscription items = 2;
+}
+
+message PrimaryPoolSubscriptionsList {
+  repeated PrimaryPoolSubscriptions items = 1;
+}
