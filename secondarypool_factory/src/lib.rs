@@ -10,7 +10,7 @@ use substreams_ethereum::pb::eth::v2 as eth;
 use substreams_ethereum::Event;
 use hex as _hex;
 
-#[allow(unused_imports)] // Might not be needed depending on actual ABI, hence the allow
+#[allow(unused_imports)] 
 use {num_traits::cast::ToPrimitive, std::str::FromStr, substreams::scalar::BigDecimal};
 
 substreams_ethereum::init!();
@@ -40,7 +40,6 @@ fn map_secondarypool_factory_events(blk: &eth::Block, events: &mut contract::Eve
         .collect());
 }
 fn is_declared_dds_address(addr: &Vec<u8>, ordinal: u64, dds_store: &store::StoreGetInt64) -> bool {
-    //    substreams::log::info!("Checking if address {} is declared dds address", Hex(addr).to_string());
     if dds_store.get_at(ordinal, Hex(addr).to_string()).is_some() {
         return true;
     }
