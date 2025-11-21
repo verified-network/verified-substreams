@@ -8,7 +8,7 @@ target/
 sink-data/
 
 # The spkg packed by the subtreams cli
-# *.spkg //we need public url for spkg files in the backend
+*.spkg
 
 replay.log 
 

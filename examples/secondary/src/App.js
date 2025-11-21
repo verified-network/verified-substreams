@@ -8,10 +8,10 @@ function App() {
   const { messages, connected, cursor } = useSubstreams(
     "https://sepolia.substreams.pinax.network:443",
     process.env.REACT_APP_SUBSTREAMS_API_TOKEN,
-    "/secondary_pool.spkg",
+    "/secondarypool.spkg",
     "map_trades_per_pool",
-    6589966,
-    "/secondary_pool.proto",
+    9496609,
+    "/secondarypool.proto",
     "contract.v1.SecondaryPoolTradeReportsList"
   );
 

@@ -22,15 +22,11 @@ binaries:
     file: ./target/wasm32-unknown-unknown/release/substreams.wasm
 
 modules:
-  - name: store_primary_pool_created
+  - name: store_primary_pool
     kind: store
     initialBlock: 5492879
     updatePolicy: set
     valueType: int64
-    blockFilter:
-      module: ethcommon:index_events
-      query:
-        string: evt_addr:0xda13bc71fee08ffd523f10458b0e2c2d8427bbd5 && evt_sig:0x83a48fbcfc991335314e74d0496aab6a1987e992ddc85dddbcc4d6dd6ef2e9fc
     inputs:
       - source: sf.ethereum.type.v2.Block
 
@@ -39,7 +35,7 @@ modules:
     initialBlock: 5492879
     inputs:
       - source: sf.ethereum.type.v2.Block
-      - store: store_primary_pool_created
+      - store: store_primary_pool
     output:
       type: proto:contract.v1.Events
 
@@ -50,14 +46,14 @@ modules:
     valueType: string
     inputs:
       - source: sf.ethereum.type.v2.Block
-      - store: store_primary_pool_created
+      - store: store_primary_pool
 
   - name: map_subscriptions_per_pool
     kind: map
     initialBlock: 5492879
     inputs:
       - source: sf.ethereum.type.v2.Block
-      - store: store_primary_pool_created
+      - store: store_primary_pool
     output:
       type: proto:contract.v1.PrimaryPoolSubscriptionsList
 
