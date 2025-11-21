@@ -19,6 +19,7 @@ substreams_ethereum::init!();
 const SECONDARYPOOL_FACTORY_TRACKED_CONTRACT: [u8; 20] =
     hex!("4519148cc4030c2e3573f1f886ed4071fa35d62b");
 
+    
 
 fn pool_exists(addr: &Vec<u8>, ordinal: u64, store: &StoreGetInt64) -> bool {
     let key = Hex(addr).to_string();
