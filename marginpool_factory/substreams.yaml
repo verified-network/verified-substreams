@@ -1,0 +1,59 @@
+specVersion: v0.1.0
+package:
+  name: marginpool_factory
+  version: v0.1.0
+
+imports:
+  ethcommon: https://spkg.io/streamingfast/ethereum-common-v0.3.0.spkg
+
+protobuf:
+  files:
+    - contract.proto
+  importPaths:
+    - ./proto
+  excludePaths:
+    - sf/substreams
+    - google
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ./target/wasm32-unknown-unknown/release/substreams.wasm
+
+modules:
+  - name: store_margin_pool
+    kind: store
+    initialBlock: 5492908
+    updatePolicy: set
+    valueType: int64
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+
+  - name: map_events
+    kind: map
+    initialBlock: 5492908
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      - store: store_margin_pool
+    output:
+      type: proto:contract.v1.Events
+
+  - name: store_margin_pool_trades_per_pool
+    kind: store
+    initialBlock: 5492908
+    updatePolicy: append
+    valueType: string
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      - store: store_margin_pool
+
+  - name: map_trades_per_pool
+    kind: map
+    initialBlock: 5492908
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      - store: store_margin_pool
+    output:
+      type: proto:contract.v1.MarginPoolTradeReportsList
+
+network: sepolia

@@ -1,0 +1,60 @@
+specVersion: v0.1.0
+
+package:
+  name: primarypool_factory
+  version: v0.1.0
+
+imports:
+  ethcommon: https://spkg.io/streamingfast/ethereum-common-v0.3.0.spkg
+
+protobuf:
+  files:
+    - contract.proto
+  importPaths:
+    - ./proto
+  excludePaths:
+    - sf/substreams
+    - google
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ./target/wasm32-unknown-unknown/release/substreams.wasm
+
+modules:
+  - name: store_primary_pool
+    kind: store
+    initialBlock: 5492879
+    updatePolicy: set
+    valueType: int64
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+
+  - name: map_events
+    kind: map
+    initialBlock: 5492879
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      - store: store_primary_pool
+    output:
+      type: proto:contract.v1.Events
+
+  - name: store_primary_pool_subscriptions_per_pool
+    kind: store
+    initialBlock: 5492879
+    updatePolicy: append
+    valueType: string
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      - store: store_primary_pool
+
+  - name: map_subscriptions_per_pool
+    kind: map
+    initialBlock: 5492879
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      - store: store_primary_pool
+    output:
+      type: proto:contract.v1.PrimaryPoolSubscriptionsList
+
+network: sepolia
